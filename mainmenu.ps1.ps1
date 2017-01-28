@@ -2,7 +2,7 @@ set-strictmode -version 2.0
 
 cls
 $userinput = ""
-while (not $userinput -eq "X" ){
+while ($userinput -ne "X" ){
     Write-Host "420-536: System Utilities"
 
     Write-Host "A - Show Services"
@@ -15,14 +15,19 @@ while (not $userinput -eq "X" ){
 
     Write-Host "X - Exist"
 
-    $userinput = Read-Host -Prompt "Your choice:_"
+    $userinput = Read-Host -Prompt "Your choice"
     $output=""
     switch ($userinput){
         "A" {$output="Show Services"}
         "B" {$output="Show Processes"}
         "C" {$output="Show System Information"}
-        "X" {$output="Existing"}
+        "X" {$output="Existing"; exit}
         default {"Please Enter One of the Accepted Choices"}
 
     }
+}
+
+function showServices{
+
+
 }
