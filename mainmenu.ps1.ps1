@@ -51,8 +51,11 @@ while ($userinput -ne "X" ){
             Write-Host "Existing"
             Read-Host -Prompt "Press Any Key to Continue" 
             exit
-         }
-        default {"Please Enter One of the Accepted Choices"}
+            }
+        default {
+            Write-Host "Please Enter One of the Accepted Choices" 
+            Read-Host -Prompt "Press Any Key to Continue" 
+            }
 
     }
 }
