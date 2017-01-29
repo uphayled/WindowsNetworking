@@ -4,5 +4,4 @@
 
 set-alias chrome "$env:C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -force 
 
-
-set-alias goto "$env:C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -force 
+set-alias go "$env:C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" -force 

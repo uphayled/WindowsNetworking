@@ -15,8 +15,7 @@ while ($userinput -ne "X" ){
 
     Write-Host "X - Exist"
 
-    $userinput = Read-Host -Prompt "Your choice"
-    $output=""
+    $userinput = Read-Host -Prompt "Your choice" 
     switch ($userinput){
         "A" {$output="Show Services"}
         "B" {$output="Show Processes"}
@@ -28,6 +27,10 @@ while ($userinput -ne "X" ){
 }
 
 function showServices{
+
+
+}
+function shoe{
 
 
 }
