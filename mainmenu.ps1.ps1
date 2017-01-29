@@ -1,5 +1,22 @@
 set-strictmode -version 2.0
 
+
+function showServices{
+
+    
+    $z = Read-Host -Prompt "Press Any Key to Continue" 
+}
+function shoeProcess{
+
+    $z = Read-Host -Prompt "Press Any Key to Continue" 
+}
+function showSysInfo{
+
+    $z = Read-Host -Prompt "Press Any Key to Continue" 
+}
+
+
+
 cls
 $userinput = ""
 while ($userinput -ne "X" ){
@@ -16,21 +33,27 @@ while ($userinput -ne "X" ){
     Write-Host "X - Exist"
 
     $userinput = Read-Host -Prompt "Your choice" 
+    cls
     switch ($userinput){
-        "A" {$output="Show Services"}
-        "B" {$output="Show Processes"}
-        "C" {$output="Show System Information"}
-        "X" {$output="Existing"; exit}
+        "A" {
+            Write-Host "Show Services" 
+            showServices  
+            }
+        "B" {
+            Write-Host "Show Processes" 
+            ShoeProcess 
+            }
+        "C" {
+            Write-Host "Show System Information" 
+            ShowSysInfo 
+            }
+        "X" {
+            Write-Host "Existing"
+            Read-Host -Prompt "Press Any Key to Continue" 
+            exit
+         }
         default {"Please Enter One of the Accepted Choices"}
 
     }
 }
 
-function showServices{
-
-
-}
-function shoe{
-
-
-}
