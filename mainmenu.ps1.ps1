@@ -3,29 +3,24 @@ set-strictmode -version 2.0
 #root of where script is being run
 $srt = $PSScriptRoot
 
-function showServices{
-Write-Host "Show Services"
+function showServices{    
+    Write-Host "Show Services"
     $services=get-service | sort-object status,name 
-
     echo $services
-
     echo $services | Export-csv -Path $srt/allservices.csv -Delimiter ","
-
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
-function shoeProcess{
-Write-Host "Show Processes" 
-
-    Get-process | Sort-Object Status, Name, DisplayName | ConvertTo-HTML | Out-File $srt\Test.htm
-
-    Invoke-Expression $srt\Test.htm
-
+function shoeProcess{    
+    Write-Host "Show Processes" 
+    Get-process | Select-Object Name,WS,VirtualMemorySize|Sort-Object  -descending | ConvertTo-HTML | Out-File $srt\runningprocesses.htm
+    Invoke-Expression $srt\runningprocesses.htm
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
-function showSysInfo{
-    Write-Host "Show System Information" 
-    & $srt/"Sysinfo.ps1"
-    $z = Read-Host -Prompt "Press Any Key to Continue" 
+function showSysInfo{    
+    Write-Host "Show System Information"     
+    & $srt/"Sysinfo.ps1"    
+    $z = Read-Host -Prompt "Press Any Key to Continue"
+
 }
 
 
