@@ -1,17 +1,30 @@
 set-strictmode -version 2.0
 
+#root of where script is being run
+$srt = $PSScriptRoot
 
 function showServices{
+Write-Host "Show Services"
+    $services=get-service | sort-object status,name 
 
-    
+    echo $services
+
+    echo $services | Export-csv -Path $srt/allservices.csv -Delimiter ","
+
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
 function shoeProcess{
+Write-Host "Show Processes" 
+
+    Get-process | Sort-Object Status, Name, DisplayName | ConvertTo-HTML | Out-File $srt\Test.htm
+
+    Invoke-Expression $srt\Test.htm
 
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
 function showSysInfo{
-
+    Write-Host "Show System Information" 
+    & $srt/"Sysinfo.ps1"
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
 
@@ -35,18 +48,9 @@ while ($userinput -ne "X" ){
     $userinput = Read-Host -Prompt "Your choice" 
     cls
     switch ($userinput){
-        "A" {
-            Write-Host "Show Services" 
-            showServices  
-            }
-        "B" {
-            Write-Host "Show Processes" 
-            ShoeProcess 
-            }
-        "C" {
-            Write-Host "Show System Information" 
-            ShowSysInfo 
-            }
+        "A" {showServices}
+        "B" {ShoeProcess}
+        "C" {ShowSysInfo}
         "X" {
             Write-Host "Existing"
             Read-Host -Prompt "Press Any Key to Continue" 
