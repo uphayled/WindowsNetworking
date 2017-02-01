@@ -12,7 +12,7 @@ function showServices{
 }
 function shoeProcess{    
     Write-Host "Show Processes" 
-    Get-process | Select-Object Name,WS,VirtualMemorySize|Sort-Object  -descending | ConvertTo-HTML | Out-File $srt\runningprocesses.htm
+    Get-process | Select-Object Name,WS,VirtualMemorySize|Sort-Object VirtualMemorySize  -descending | ConvertTo-HTML | Out-File $srt\runningprocesses.htm
     Invoke-Expression $srt\runningprocesses.htm
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
@@ -20,7 +20,6 @@ function showSysInfo{
     Write-Host "Show System Information"     
     & $srt/"Sysinfo.ps1"    
     $z = Read-Host -Prompt "Press Any Key to Continue"
-
 }
 
 
