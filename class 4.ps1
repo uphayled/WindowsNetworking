@@ -52,3 +52,5 @@ get-Process | sort company | format-Table ProcessName -groupby company
 ##[System.Management.Automation.Host.ChoiceDescription[]]($yes, $no)
 
 Get-Process | Get-Member
+
+Set-executionpolicy unrestricted
