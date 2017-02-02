@@ -1,13 +1,31 @@
-﻿set-strictmode -version 2.0
+﻿Param(
+    #do it with powershell
+    [bool]$p = $false
+)
+
+set-strictmode -version 2.0
 
 #root of where script is being run
 $srt = $PSScriptRoot
 
-New-LocalGroup teachers
-New-LocalUser Jim -Password "Jim2017a2sd"
-Add-LocalGroupMember -Group teachers,Administrators -Member Jim
-
-New-LocalGroup students
+if($p){
+    ###
+    #  With PowerShell Cmd-let
+    ###
+    New-LocalGroup teachers
+    $Password = ConvertTo-SecureString -String "Jim2017WN" -asplaintext -force
+    New-LocalUser Jim -Password $Password
+    Add-LocalGroupMember -Group teachers,Administrators -Member Jim
+    New-LocalGroup students
+}
+else{
+    ###
+    #  With cmd commands
+    ###
+    cmd /c $("net user /add Jim Jim2017WN")
+    cmd /c $("net localgroup administrators Jim /add")
+    cmd /c $("net localgroup students /add")
+}
 
 $list=$srt/"students.txt"
 
@@ -16,11 +34,22 @@ if (!(Test-Path -Path $list )){
     $z = Read-Host -Prompt "Press Any Key to Continue" 
     Exit
 }
-
+ 
 Get-Content $list
 foreach ($s in $list){
-  
-    New-LocalUser $s -Password “Password123”
-
+    if($p){
+        ###
+        #  With PowerShell Cmd-let
+        ###
+        $student_password = ConvertTo-SecureString -String "Password123"  -asplaintext -force
+        New-LocalUser $s -Password $student_password
+    }
+    else{
+        ###
+        #  With cmd commands
+        ###
+        cmd /c $("net user /add $s Password123")
+        cmd /c $("net accounts /minpwage:0")
+    }
 
 }
