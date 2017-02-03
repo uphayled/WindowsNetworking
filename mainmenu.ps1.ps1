@@ -43,8 +43,8 @@ while ($userinput -ne "X" ){
     cls
     switch ($userinput){
         "A" {showServices}
-        "B" {ShoeProcess}
-        "C" {ShowSysInfo}
+        "B" {shoeProcess}
+        "C" {showSysInfo}
         "X" {
             Write-Host "Existing"
             Read-Host -Prompt "Press Any Key to Continue" 

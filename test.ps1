@@ -1,0 +1,2 @@
+﻿$srt = $PSScriptRoot
+echo $srt
