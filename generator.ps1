@@ -1,24 +1,16 @@
 ﻿Param(
     #do it with powershell
-    [bool]$p = $false
+    [bool]$removeuser = $false
 )
 set-strictmode -version 2.0
  
 #root of where script is being run
 $srt = $PSScriptRoot
 
-if($p){
-    New-LocalGroup teachers
-    $Password = ConvertTo-SecureString -String "Jim2017WN" -asplaintext -force  
-    New-LocalUser Jim -Password $Password
-    Add-LocalGroupMember -Group teachers,Administrators -Member Jim
-    New-LocalGroup students
-}
-else{
-    net user Jim Jim2017WN /add
-    net localgroup administrators Jim /add
-    net localgroup students /add
-}
+net user Jim Jim2017WN /add >$null 2>&1
+net localgroup administrators Jim /add >$null 2>&1
+net localgroup students /add >$null 2>&1
+
 $stu="$srt\students.txt"
 
 if (!(Test-Path -Path $stu )){
@@ -28,16 +20,36 @@ if (!(Test-Path -Path $stu )){
 }
  
 #Get-Content $stu
+$countdel = 0
+$countold = 0
+$counter = 0
 foreach ($s in $(Get-Content $stu)){
-    echo $s
-    if($p){
-        $student_password = ConvertTo-SecureString -String "Password123"  -asplaintext -force
-        New-LocalUser $s -Password $student_password
-    }
-    else{
-        net user "$s" Password123 /add
-        net localgroup students "$s" /add
-        net accounts /minpwage:0
-    }
 
+         
+
+        if($removeuser){
+            
+            net localgroup students "$s" /delete >$null 2>&1
+            net user "$s"  /delete >$null 2>&1
+            $countdel++
+            Write-Host "Deleting user :$countdel : $s"
+        }
+        else {
+            $check = net user $s  2>&1 | Out-String
+            if($check.Contains("User name")){            
+                $countold++
+                Write-Host "$countold : $s : Error Account already exists"
+            }
+            else{
+                net user "$s" Password123 /add  >$null 2>&1
+                net localgroup students "$s" /add  >$null 2>&1
+                $counter++
+                Write-Host "$counter : $s : Account created"
+            }
+        }
 }
+Write-Host "----------------------------------"
+Write-Host "$counter :Accounts created"
+Write-Host "$countdel :Accounts Deleted"
+Write-Host "$countold :Account already existed"
+net accounts /minpwage:0 >$null 2>&1

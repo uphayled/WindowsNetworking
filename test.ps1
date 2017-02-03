@@ -1,2 +1,1 @@
-﻿$srt = $PSScriptRoot
-echo $srt
+﻿ $CU = net user Jim /addIf ($u =$false) {$CU}
