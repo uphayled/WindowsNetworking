@@ -19,23 +19,20 @@ if (!(Test-Path -Path $stu )){
     Exit
 }
  
-#Get-Content $stu
 $countdel = 0
 $countold = 0
 $counter = 0
 foreach ($s in $(Get-Content $stu)){
-
-         
-
         if($removeuser){
-            
             net localgroup students "$s" /delete >$null 2>&1
             net user "$s"  /delete >$null 2>&1
             $countdel++
             Write-Host "Deleting user :$countdel : $s"
         }
         else {
+            #silently checks if username exists
             $check = net user $s  2>&1 | Out-String
+            #check will contain "User name" the account already exists
             if($check.Contains("User name")){            
                 $countold++
                 Write-Host "$countold : $s : Error Account already exists"
