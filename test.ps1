@@ -1,1 +1,1 @@
-﻿ Get-process | Select-Object @{Label = "Name" ; Expression = {$_.Name }} ,@{Label = "Physical"; Expression = {$_.WS }},@{Label = "Virtual"; Expression = {$_.VM}},@{Label = "TotalMem"; Expression = {$_.WS + $_.VM}} | Sort-Object TotalMeme  -descending | ConvertTo-HTML | Out-File $srt\runningprocesses.htm
+﻿Get-WindowsFeature -Name *gui*
