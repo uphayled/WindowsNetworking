@@ -4,24 +4,39 @@ set-strictmode -version 2.0
 $srt = $PSScriptRoot
 
 function showServices{    
+    <#
+        .Synopsis         
+        Shows all services then exports to a csv file         
+    #>
+    
     Write-Host "Show Services"
     $services=get-service | sort-object status,name 
     echo $services
     echo $services | Export-csv -Path $srt/allservices.csv -Delimiter ","
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
-function shoeProcess{    
+function shoeProcess{ 
+    <# .Synopsis         
+       Shows all processes then exports to a csv file #>   
     Write-Host "Show Processes" 
-    Get-process | Select-Object Name,WS,VirtualMemorySize|Sort-Object VirtualMemorySize  -descending | ConvertTo-HTML | Out-File $srt\runningprocesses.htm
+    Get-process | Select-Object Name,WorkingSet,VirtualMemorySize| Sort-Object VirtualMemorySize -descending | ConvertTo-HTML | Out-File $srt\runningprocesses.htm
     Invoke-Expression $srt\runningprocesses.htm
     $z = Read-Host -Prompt "Press Any Key to Continue" 
 }
-function showSysInfo{    
+function showSysInfo{   
+    <# .Synopsis         
+       Runs a script to display system info #>   
     Write-Host "Show System Information"     
     & $srt/"Sysinfo.ps1"    
     $z = Read-Host -Prompt "Press Any Key to Continue"
 }
-
+function showDoor{
+    <# .Synopsis         
+       Exits script #> 
+    Write-Host "Existing"
+    Read-Host -Prompt "Press Any Key to Continue" 
+    exit
+}
 
 
 cls
@@ -45,11 +60,7 @@ while ($userinput -ne "X" ){
         "A" {showServices}
         "B" {shoeProcess}
         "C" {showSysInfo}
-        "X" {
-            Write-Host "Existing"
-            Read-Host -Prompt "Press Any Key to Continue" 
-            exit
-            }
+        "X" {shoeDoor}
         default {
             Write-Host "Please Enter One of the Accepted Choices" 
             Read-Host -Prompt "Press Any Key to Continue" 

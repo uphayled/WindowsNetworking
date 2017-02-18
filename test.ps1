@@ -1,1 +1,2 @@
-﻿ $CU = net user Jim /addIf ($u =$false) {$CU}
+﻿Get-WindowsFeature -Name *gui*
+Get-WindowsFeature -Name *iis*

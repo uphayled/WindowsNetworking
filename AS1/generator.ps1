@@ -1,5 +1,4 @@
 ﻿Param(
-    #do it with powershell
     [bool]$removeuser = $false
 )
 set-strictmode -version 2.0
@@ -7,14 +6,21 @@ set-strictmode -version 2.0
 #root of where script is being run
 $srt = $PSScriptRoot
 
-net user Jim Jim2017WN /add >$null 2>&1
-net localgroup administrators Jim /add >$null 2>&1
-net localgroup students /add >$null 2>&1
+$check = net user Jim  2>&1 | Out-String
+
+if($check.Contains("User name")){    
+      Write-Host "OUr boiii jim already exists"
+}
+else{
+    net user Jim Jim2017WN /add >$null 2>&1
+    net localgroup administrators Jim /add >$null 2>&1
+    net localgroup students /add >$null 2>&1
+}
 
 $stu="$srt\students.txt"
 
 if (!(Test-Path -Path $stu )){
-    Write-Host "Error couldn't find student List"
+    Write-Host "Error couldn't find student list, students.txt"
     $z = Read-Host -Prompt "Press Any Key to Continue" 
     Exit
 }
@@ -22,7 +28,9 @@ if (!(Test-Path -Path $stu )){
 $countdel = 0
 $countold = 0
 $counter = 0
+#for every name in the students.txt
 foreach ($s in $(Get-Content $stu)){
+        #delete option
         if($removeuser){
             net localgroup students "$s" /delete >$null 2>&1
             net user "$s"  /delete >$null 2>&1
@@ -49,4 +57,6 @@ Write-Host "----------------------------------"
 Write-Host "$counter :Accounts created"
 Write-Host "$countdel :Accounts Deleted"
 Write-Host "$countold :Account already existed"
+
+#set all accounts min password age to 0
 net accounts /minpwage:0 >$null 2>&1
