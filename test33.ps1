@@ -1,0 +1,1 @@
+﻿get-content text.txt
