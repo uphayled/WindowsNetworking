@@ -5,40 +5,36 @@ $srt = $PSScriptRoot
 
 $DISKAMOUNT = 3 
 
-<#check and create "disks"
+#check and create "disks"
 $stu = "\stripe"
-foreach ($a in (1..3)){
-    while (!(Test-Path -Path $srt$stu$a )){
-        out-file -filepath $srt$stu$a
-    }
-    write-host "$stu$a file exists"
-}#>
 
-#$arr# = [io.file]::ReadAllBytes("$srt\macbeth.txt")
-
-#[io.file]::WriteAllBytes("$srt$stu",$arr)
-
-#foreach ($c in @(Get-Content $srt\"MacBeth.txt" -Encoding byte) ){
-#    $arr.add($c)
-#}
-$id=0
+$file1 = New-Object System.IO.StreamWriter("$srt$stu$q")
+$file2 = New-Object System.IO.StreamWriter("$srt$stu$w")
+$file3 = New-Object System.IO.StreamWriter("$srt$stu$e")
+$id=1
 $line=3
 $read = New-Object System.IO.StreamReader("$srt\macbeth.txt")
+$l = 1
 $enc = [system.Text.Encoding]::ASCII
 measure-command { 
 try {
     while($read.Peek() -ge 0){
-        $f = [String[]] 
+        $f = "","",""
+        
         $b =  $enc.GetBytes($read.ReadLine()) 
         foreach ($a in $b){
-             $j =  [convert]::ToString([int32]$a,2)
-             
-             foreach($h in $j ){
-                 $f[$id++ % $DISKAMOUNT] = $h 
-                 
+             $j = [string] [convert]::ToString([int32]$a,2).PadLeft(8,'0')
+
+             $i = $j.Split("") 
+             foreach ($z in $i.ToCharArray()){
+                $f[($id++ % $DISKAMOUNT )] += $z -bxor ($l/$id)
              }
         }
-        #write-host $f
+        $l++
+        $file1.Write($f[0])
+        $file2.Write($f[1])
+        $file3.Write($f[2])
+        
         
         
         
@@ -47,7 +43,10 @@ try {
         
 }
 finally {
-    $reader.Close()
+    $file1.Close()
+    $file2.Close()
+    $file3.Close()
+    $read.Close()
 }
 
 $stu = "\stripe"
@@ -71,28 +70,5 @@ write-host "" | out-file -FilePath $srt$stu$r
 foreach ($i in (1..$DISKAMOUNT)){
     write-host  (get-content $srt$stu$i)
 }
-
-<# $dead=-1;
-$d1 
-$d2
-if(!(Test-Path -Path $srt$stu"1" )){
-    $d1 = get-content $srt$stu"2"
-    $d2 = get-content $srt$stu"3"
-    $dead = 1        
-}
-else{
-    if(!(Test-Path -Path $srt$stu"2")){
-        $d1 = get-content $srt$stu"1"
-        $d2 = get-content $srt$stu"3"
-        $dead = 2
-    }        
-    else{
-        $d1 = get-content $srt$stu"1"
-        $d2 = get-content $srt$stu"2"
-        $dead = 3
-    }
-
-}#>
-
-   
+ 
 }
