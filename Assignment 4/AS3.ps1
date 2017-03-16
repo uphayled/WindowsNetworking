@@ -13,7 +13,7 @@ $file2 = New-Object System.IO.StreamWriter("$srt$stu"+"2")
 $file3 = New-Object System.IO.StreamWriter("$srt$stu"+"3")
 $id=1
 $line=3
-$read = New-Object System.IO.StreamReader("$srt\test.txt")
+$read = New-Object System.IO.StreamReader("$srt\macbeth.txt")
 $l = 1
 $enc = [system.Text.Encoding]::ASCII
 measure-command { 
@@ -23,7 +23,7 @@ measure-command {
             $b =  $enc.GetBytes($read.ReadLine()) 
             foreach ($a in $b){
                  $j = [string] [convert]::ToString([int32]$a,2).PadLeft(8,'0')
-                 write-host $j
+                 #write-host $j
                  $i = $j.Split("") 
                  foreach ($z in $i.ToCharArray()){
                     $f[($id++ % $DISKAMOUNT )] +=[string] $z -bxor ($l/$id)
@@ -43,59 +43,51 @@ measure-command {
     }
 
     $stu = "\stripe"
-    <#
-    #READ OUT
-    $id=0
-    foreach ($c in $arr){
-        $a = (($i ++ )%3) +1
-        $j = [convert]::ToString([int32]$c,2)
-        out-file -FilePath $srt$stu$a -InputObject $j
-    }
-    #>
-    #disk number not index
-    $r = 1#((get-random)%$DISKAMOUNT) +1
+
+    $r = ((get-random)%$DISKAMOUNT) +1
 
     write-host "deleting disk $r"
 
-    Remove-Item $srt$stu$r
-    $rebuild
-    $todo
-     
-    foreach ($z in (1..$DISKAMOUNT)){
-        $drives=0
-        if(Test-Path "$srt$stu$z"){
-            $rebuild[$drives++] = New-Object System.IO.StreamReader("$srt$stu$z")
+    Remove-Item $srt$stu$r 
 
-        }
-        else{
-            $todo = New-Object System.IO.StreamWriter("$srt$stu"+$z)
+    
+    $alive = 1,2,3
+    #setting 
+    foreach ($ccc in (1..$DISKAMOUNT)){
+        if(!(Test-Path $srt$stu$ccc)){
+            write-host $srt$stu$ccc
+            $temp=$alive[$ccc-1]
+            $alive[$ccc-1]=$DISKAMOUNT
+            $alive[$DISKAMOUNT-1]=$temp
         }
     }
-    write-host $rebuild[0]
-    write-host $rebuild[1]
-    try {
-        $count=0
-        
-        while($true){
-           $sum1 = 0
-           $sum2 = 0
-           $rebuild[0].Read($sum1,$count++,$count)
-           $rebuild[1].Read($sum2,$count++,$count)
-           $t=$sum1+$sum2
-           $todo.Write($t)
 
+    $a = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[0])",[System.IO.FileMode]::Open));
+    $b = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[1])",[System.IO.FileMode]::Open));
+    New-Item $srt$stu$($alive[2])".rebuilt" -type file -Force
+    $todo = New-Object System.IO.StreamWriter("$srt$stu$($alive[2]).rebuilt")
+    
+    try { 
+        #cannot reproduce data if one of the disks doesn thave data,
+        #so we only need to check for one
+        while(($a.BaseStream.Position -ne  $a.BaseStream.Length) -and ($aa = $a.ReadChar()) -and ($bb = $b.ReadChar())){        
+            $towrite = $aa -bxor $bb
+            $todo.Write($towrite)
         }
-
     }
-    finally {
+    finally{
+        $a.Close()
+        $b.Close()
         $todo.Close()
     }
+
+    ##
+    ## testin 
+
     
-    foreach ($z in $rebuild){
-        
-       # $rebuild[$todo] += $z
-        
-    }
+    
+    
+   
 }
 
    
