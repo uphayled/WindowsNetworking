@@ -11,7 +11,7 @@ $stu = "\stripe"
 $file1 = New-Object System.IO.StreamWriter("$srt$stu"+"1")
 $file2 = New-Object System.IO.StreamWriter("$srt$stu"+"2")
 $file3 = New-Object System.IO.StreamWriter("$srt$stu"+"3")
-$FILE_TO_READ = "test.txt"
+$FILE_TO_READ = "macbeth.txt"
 $read = New-Object System.IO.StreamReader("$srt\$FILE_TO_READ")
 Write-Host ""
 Write-host "-------------------------------------------------"
@@ -27,7 +27,7 @@ measure-command {
             $b =  $enc.GetBytes($read.ReadLine()) 
             foreach ($a in $b){
                  $j = [string] [convert]::ToString([int32]$a,2).PadLeft(8,'0')
-                 write-host $j
+                 
                  $i = $j.Split("") 
                  $towrite = [char],[char]
                  $id=0
@@ -48,7 +48,6 @@ measure-command {
 
                  }
             }
-            write-host $f
             $file1.Write($f[0])
             $file2.Write($f[1])
             $file3.Write($f[2])
@@ -70,7 +69,7 @@ measure-command {
 
     New-Item $srt\"deleted" -type directory -Force
     Copy-item -Path $srt$stu$r -Destination $srt\"deleted"\$stu$r -Force    
-    #Remove-Item $srt$stu$r 
+    Remove-Item $srt$stu$r 
     
     $alive = 1,2,3
     #setting 
@@ -82,67 +81,68 @@ measure-command {
         }
     }
 
-    $a = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[0])",[System.IO.FileMode]::Open));
-    $b = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[1])",[System.IO.FileMode]::Open));
+    $aa = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[0])",[System.IO.FileMode]::Open));
+    $bb = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[1])",[System.IO.FileMode]::Open));
     
     New-Item $srt$stu$($alive[2])".rebuilt" -type file -Force
-    $todo = New-Object System.IO.StreamWriter("$srt$stu$($alive[2])")
+    $todo = New-Object System.IO.StreamWriter("$srt$stu$($alive[2]).rebuilt")
     
     try { 
         #cannot reproduce data if one of the disks doesn thave data,
-        #so we only need to check for one
-        #while(($a.BaseStream.Position -ne  $a.BaseStream.Length) -and ($cc = $a.ReadChar() -bxor  $b.ReadChar())){        
-        Write-Host "#-----------------#"
+         Write-Host "#-----------------#"
         write-host " rebuilding disk $($alive[2])" 
         Write-Host "#-----------------#"
-        while(($a.BaseStream.Position -eq $a.BaseStream.Length) -and ($cc = $a.ReadChar() -bxor  $b.ReadChar())){       
-            $todo.Write($cc)
+        while($aa.PeekChar()){  
+            $todo.Write( $aa.ReadChar() -bxor $bb.ReadChar())  
         }
-    } 
-    catch{
-        
-    }   
+    }  
     finally{
-        $a.Close()
-        $b.Close()
+        $aa.Close()
+        $bb.Close()
         $todo.Close()
     }
 
    
 }
-<#
+
 ###TESTING SECTION
 write-Host "testing section"
 $a = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[0])",[System.IO.FileMode]::Open));
 $b = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[1])",[System.IO.FileMode]::Open));
-$c = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[2])",[System.IO.FileMode]::Open));
-   
+$c = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[2]).rebuilt",[System.IO.FileMode]::Open));
+ 
+New-Item $srt"\rebuilt" -type file -Force
+$d = New-Object System.IO.StreamWriter("$srt\rebuilt")
+  
 $towrite = ""
-$count=1
 try { 
     #cannot reproduce data if one of the disks doesn thave data,
     #so we only need to check for one
     $l=0
-    while(($a.BaseStream.Position -eq $a.BaseStream.Length) ){
-               
-        $aa[0] = $a.ReadChar()
-        $aa[1] = $b.ReadChar()
-        $aa[2] = $c.ReadChar()
+
+    while($a.PeekChar()){
+        $temp = [char],[char],[char]       
+        $temp[0] = $a.ReadChar()
+        $temp[1] = $b.ReadChar()
+        $temp[2] = $c.ReadChar()
 
         foreach($ks in $(0..2)){
             if($ks -ne $l){
-                $towrite += [string] $aa[$ks]
+                $towrite += [string] $temp[$ks]
+                $temp = [char],[char],[char]       
             }
 
-
-
         }
-        write-host $towrite
+        $l++
         
-        $count ++
-        if(!($count%8)){
-
+        if($towrite.Length -eq 8){
+           
+            write-host $([System.Text.Encoding]::UTF8.GetString([System.Convert]::ToInt32($towrite,2)))
+            $d.Write(  [System.Text.Encoding]::UTF8.GetString([System.Convert]::ToInt32($towrite,2))) 
         }
+        
+        
+        
 
     }
 }
@@ -153,10 +153,8 @@ $a.Close()
 $b.Close()
 $c.Close()
 
-New-Item $srt"\rebuilt" -type file -Force
-$d = New-Object System.IO.StreamWriter("$srt\rebuilt")
 
 
 $d.close()
   
-    #>
+   
