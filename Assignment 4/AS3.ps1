@@ -18,8 +18,7 @@ Write-host "-------------------------------------------------"
 Write-Host "           Readin in :" $FILE_TO_READ
 Write-host "-------------------------------------------------"
 Write-Host ""
-$id=0
-$par=2
+$parity=0
 $enc = [system.Text.Encoding]::ASCII
 measure-command { 
     try {
@@ -28,23 +27,28 @@ measure-command {
             $b =  $enc.GetBytes($read.ReadLine()) 
             foreach ($a in $b){
                  $j = [string] [convert]::ToString([int32]$a,2).PadLeft(8,'0')
-                 #write-host $j
+                 write-host $j
                  $i = $j.Split("") 
-                 $temp=""
+                 $towrite = [char],[char]
+                 $id=0
                  foreach ($z in $i.ToCharArray()){
-                    $temp += $z
-                    $id++
-                    write-host $id
+                    
+                    $towrite[$id++] = $z
+                    
                     if($id%3 -eq 2){
-                        $temp = $temp.Split("")
-                        $f[$id%3] += [string]  $temp[0] -bxor $temp[1]
-                        $f[$id+1%3] += [string]  $temp[0] 
-                        $f[$id+1%3] += [string]  $temp[1]
-                        $temp=""
+                        $f[$parity++%3] +=   $towrite[0] -bxor $towrite[1]
+                        
+                        $f[$parity++%3] +=   $towrite[0] 
+                       
+                        $f[$parity++%3] +=   $towrite[1]
+                        $towrite=[char],[char]
+                        $id=0
+                        $parity++
                     }
-                    $par++
+
                  }
             }
+            write-host $f
             $file1.Write($f[0])
             $file2.Write($f[1])
             $file3.Write($f[2])
@@ -72,7 +76,6 @@ measure-command {
     #setting 
     foreach ($ccc in (1..$DISKAMOUNT)){
         if(!(Test-Path $srt$stu$ccc)){
-            
             $temp=$alive[$ccc-1]
             $alive[$ccc-1]=$DISKAMOUNT
             $alive[$DISKAMOUNT-1]=$temp
@@ -107,9 +110,9 @@ measure-command {
 
    
 }
-
+<#
 ###TESTING SECTION
-<#write-Host
+write-Host "testing section"
 $a = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[0])",[System.IO.FileMode]::Open));
 $b = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[1])",[System.IO.FileMode]::Open));
 $c = New-Object System.IO.BinaryReader([System.IO.File]::Open("$srt$stu$($alive[2])",[System.IO.FileMode]::Open));
@@ -119,18 +122,22 @@ $count=1
 try { 
     #cannot reproduce data if one of the disks doesn thave data,
     #so we only need to check for one
-    $l=1
+    $l=0
     while(($a.BaseStream.Position -eq $a.BaseStream.Length) ){
                
         $aa[0] = $a.ReadChar()
         $aa[1] = $b.ReadChar()
         $aa[2] = $c.ReadChar()
-        foreach($ks in $(1..3)){
-            if($l%3 -ne 0){
-                $vv=$aa[$ks % 3]
+
+        foreach($ks in $(0..2)){
+            if($ks -ne $l){
+                $towrite += [string] $aa[$ks]
             }
+
+
+
         }
-       
+        write-host $towrite
         
         $count ++
         if(!($count%8)){
@@ -151,5 +158,5 @@ $d = New-Object System.IO.StreamWriter("$srt\rebuilt")
 
 
 $d.close()
-   #>
-    
+  
+    #>
